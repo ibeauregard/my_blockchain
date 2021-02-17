@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Wpedantic -Werror -g3
+CFLAGS += -Wall -Wextra -Wpedantic -Werror -g3
 SANITIZE = -fsanitize=address
 LINKERFLAG = -lm
 
