@@ -1,3 +1,4 @@
 my_blockchain
 my_blockchain_test
 *.o
+.idea
