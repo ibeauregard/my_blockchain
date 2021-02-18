@@ -6,7 +6,7 @@
 
 typedef struct s_blockchain {
     Node *head;
-    size_t length;
+    size_t num_nodes;
 } Blockchain;
 
 Node *get_node_from_id(unsigned int nid);
