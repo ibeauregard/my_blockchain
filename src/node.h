@@ -10,4 +10,7 @@ typedef struct s_node {
     struct s_node *next;
 } Node;
 
+Node *new_node(unsigned int nid);
+void destruct_node(Node *node);
+
 #endif

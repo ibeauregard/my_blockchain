@@ -8,4 +8,7 @@ typedef struct s_block {
     struct s_block *next;
 } Block;
 
+Block *new_block(unsigned int bid);
+void destruct_block(Block *block);
+
 #endif
