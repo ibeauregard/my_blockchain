@@ -8,7 +8,7 @@ typedef struct s_blockchain {
     Node *head;
 } Blockchain;
 
-void set_blockchain(Node *nodes);
+void load_blockchain(Node *nodes);
 Node *get_node_from_id(unsigned int nid);
 void add_node(Node *node);
 void rmv_node(Node *node);
