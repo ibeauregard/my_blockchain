@@ -6,7 +6,6 @@
 
 typedef struct s_blockchain {
     Node *head;
-    size_t num_nodes;
 } Blockchain;
 
 void set_blockchain(Node *nodes);
