@@ -8,4 +8,7 @@ typedef struct s_node_list {
     size_t length;
 } NodeList;
 
+void add_node(Node *node);
+void remove_node(Node *node);
+
 #endif
