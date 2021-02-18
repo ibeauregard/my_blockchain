@@ -9,6 +9,6 @@ typedef struct s_node_list {
 } NodeList;
 
 void add_node(Node *node);
-void remove_node(Node *node);
+void rmv_node(Node *node);
 
 #endif
