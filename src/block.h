@@ -10,5 +10,6 @@ typedef struct s_block {
 Block *new_block(unsigned int bid);
 Block *clone_chain(Block *head);
 void free_block(Block *block);
+void free_chain(Block *head);
 
 #endif
