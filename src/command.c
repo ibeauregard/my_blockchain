@@ -164,10 +164,20 @@ static void set_id_list(Command *command, char *line)
 
 }
 
+/* set_ls_cmd: Needs to check if there is an '-l' flag. 
+ * Right now only checks second token.
+ */
 static void set_ls_cmd(Command *command, char *line)
 {
-	(void) line;
 	command->maincmd = LS;
+	char delim = ' ';
+	char *token = _strsep(&line, &delim);
+	// If we don't include this check, _strcmp will error if token is NULL.
+	if (!token) return;
+	if (!_strcmp("-l", token)) {
+		command->lflag = true;
+	}
+	return;
 }
 
 static void set_sync_cmd(Command *command)
