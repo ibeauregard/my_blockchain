@@ -44,7 +44,7 @@
  * Additionally, because only one instance of struct Command is ever required
  * at any given time, this decision seemed appropriate.
  *
- * With that being said, still need to malloc memoryu for .idlist member.
+ * With that being said, still need to malloc memory for .idlist member.
  * Therefore, before each new call to new_cmd(), we need to free this memory.
  */
 static Command *new_cmd()
@@ -53,8 +53,8 @@ static Command *new_cmd()
 	free_cmd(&command);
 	Command tmpcommand = {
 		.maincmd = UNDEFINED,
-		.lflag = 0,
-		.all = 0,
+		.lflag = false,
+		.all = false,
 		.idlist = NULL,
 		.idcount = 0,
 	};
@@ -62,16 +62,23 @@ static Command *new_cmd()
 	return &command;
 }
 
-/* print_idlist: Used for debugging
+/* print_cmd: Used for debugging
  */
-void print_idlist(Command *command)
+void print_cmd(Command *command)
 {
+	printf("maincmd: %d\n", command->maincmd);
+	printf("lflag: %d\n", command->lflag);
+	printf("all: %d\n", command->all);
+	// Print idlist
+	printf("id: ");
 	for (int i = 0; i < command->idcount; i++) {
-		printf("%d\n", *(command->idlist+i));
+		printf("%d, ", *(command->idlist+i));
 	}
+	printf("\n");
+	printf("idcount: %d\n", command->idcount);
 }
 
-/* free_cmd: Needed for freeing just the memory that was to be allocated.
+/* free_cmd: Needed for freeing just the memory allocated in set_id_list().
  * While struct Command is a static instance, the .idlist needs to point to 
  * malloc'd memory. Thus this memory needs to be freed at the very end of the
  * program AND right before each new call of new_cmd(). If not, new_cmd() will
@@ -79,13 +86,14 @@ void print_idlist(Command *command)
  */
 void free_cmd(Command *command)
 {
-	if (command->idcount) {
+	if (command->idlist) {
 		free(command->idlist);
+		command->idlist = NULL;
 	}
 
 }
 
-static int set_id_list(int **id, char *line);
+static void set_id_list(Command *command, char *line);
 
 static void set_add_cmd(Command *command, char *line)
 {
@@ -94,10 +102,10 @@ static void set_add_cmd(Command *command, char *line)
 	if (!token) return;
 	if (!_strcmp("node", token)) {
 		command->maincmd = ADD_NODE;
-		command->idcount = set_id_list(&command->idlist, line);
+		set_id_list(command, line);
 	} else if (!_strcmp("block", token)) {
 		command->maincmd = ADD_BLOCK;
-		command->idcount = set_id_list(&command->idlist, line);
+		set_id_list(command, line);
 	} 
 	return;
 }
@@ -109,10 +117,10 @@ static void set_rm_cmd(Command *command, char *line)
 	if (!token) return;
 	if (!_strcmp("node", token)) {
 		command->maincmd = RM_NODE;
-		command->idcount = set_id_list(&command->idlist, line);
+		set_id_list(command, line);
 	} else if (!_strcmp("block", token)) {
 		command->maincmd = RM_BLOCK;
-		command->idcount = set_id_list(&command->idlist, line);
+		set_id_list(command, line);
 	} 
 	return;
 }
@@ -120,32 +128,40 @@ static void set_rm_cmd(Command *command, char *line)
 /* set_id_list: This function required for set_add_cmd and set_rm_cmd.
  * It takes the remaining tokens, which are supposed to be lists of
  * bid's or nid's and adds them as an array to struct Command. The
- * function returns the number of tokens added.
+ * function also updates .idcount and / or .all if necessary.
  *
  * Because we allocate memory here, we have to free it at the end of
- * the program. This feels somewhat bizarre, because it's only these
- * members of struct Command that need to be freed.
+ * the program. 
  */
-static int set_id_list(int **id, char *line) 
+static void set_id_list(Command *command, char *line) 
 {
 	char delim = ' ';
-	// Allocate exact amount of memory
+	// Allocate exact amount of memory to .idlist
 	int tokencount = 0;
-	char cpyline[_strlen(line)];
+	char cpyline[_strlen(line) + 1];
 	_strcpy(cpyline, line);
 	char *cpyptr = cpyline;
 	while (_strsep(&cpyptr, &delim)) {
 		tokencount++;
 	}
-	if (!tokencount) return 0;
-	*id = malloc(sizeof(int) * tokencount);
-	// Get tokens and put into memory
+	if (!tokencount) return;
+	command->idlist = malloc(sizeof(int) * tokencount);
+	// Get tokens and add to .idlist
 	char *token;
 	for (int i = 0; i < tokencount; i++) {
 		token = _strsep(&line, &delim);
-		*(*id + i) = (int) strtol(token, NULL, 10);
+		// If any tokens are *, we set flag and immediately
+		// free the malloc'd idlist. It is no longer needed.
+		if (!_strcmp("*", token)) {
+			command->all = true;
+			free_cmd(command);
+			return;
+		}
+		*(command->idlist + i) = (int) strtol(token, NULL, 10);
 	}
-	return tokencount;
+	command->idcount = tokencount;
+	return;
+
 }
 
 static void set_ls_cmd(Command *command, char *line)
@@ -186,5 +202,7 @@ Command *get_cmd()
 		set_quit_cmd(command);
 	} 	
 	free(line_to_free);
+	line_to_free = NULL;
+	print_cmd(command);
 	return command;
 }
