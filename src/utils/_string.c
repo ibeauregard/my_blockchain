@@ -12,6 +12,15 @@ size_t _strlen(const char* str)
     return len;
 }
 
+char *_strchr(const char *s, int c) 
+{
+	while (*s != c && *s != '\0') {
+		s++;
+	}
+	if (*s == '\0') return NULL; 
+	return (char *) s;
+}
+
 int _strcmp (const char* str1, const char* str2)
 {
     for (; *str1 && *str2 && *str1 == *str2; str1++, str2++);

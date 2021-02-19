@@ -9,10 +9,12 @@ typedef enum e_cmd { UNDEFINED, ADD_NODE, ADD_BLOCK, RM_NODE,
 typedef struct s_command {
 	MainCmd maincmd;
 	bool lflag;
-	int *nidlist;
-	int *bidlist;
+	bool all;
+	int *idlist;
+	int idcount;
 } Command;
 
 Command *get_cmd();
+void free_cmd(Command *command);
 
 #endif // _PARSE_H

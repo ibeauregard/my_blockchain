@@ -35,5 +35,6 @@ int main()
 		}
 	}
 	quit:
+	free_cmd(command);
 	return 0;
 }
