@@ -8,6 +8,15 @@ int _isdigit(int d)
 	return 1;
 }
 
+int _isnumeric(char *string)
+{
+	while (*string) {
+		if (!_isdigit((int) *string++))
+			return 0;
+	}
+	return 1;
+}
+
 static int getValueOfDigit(char d, int base) 
 {
 	if (base > 35 || base < 1)

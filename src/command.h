@@ -10,11 +10,14 @@ typedef struct s_command {
 	MainCmd maincmd;
 	bool lflag;
 	bool all;
-	int *idlist;
-	int idcount;
+	int *nidlist;
+	int nidcount;
+	int *bidlist;
+	int bidcount;
 } Command;
 
 Command *get_cmd();
 void free_cmd(Command *command);
+void print_cmd(Command *command);
 
 #endif // _PARSE_H

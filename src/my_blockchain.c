@@ -7,6 +7,7 @@ int main()
 {	
 	Command *command;
 	while ((command = get_cmd())) {
+		print_cmd(command);
 		switch (command->maincmd) {
 		case UNDEFINED:
 			printf("bad command....\n");
