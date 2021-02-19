@@ -17,8 +17,9 @@ Node *new_node(unsigned int nid);
 Block *get_block_from_id(unsigned int bid, Node *node);
 void add_block(Block *block, Node *node);
 void rmv_block(Block *block, Node *node);
-bool node_is_synced(Node *node);
-bool node_is_empty(Node *node);
+bool node_is_synced(const Node *node);
+bool node_is_empty(const Node *node);
 void free_node(Node *node);
+void free_node_chain(Node *node);
 
 #endif
