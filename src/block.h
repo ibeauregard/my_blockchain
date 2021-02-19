@@ -8,7 +8,7 @@ typedef struct s_block {
 } Block;
 
 Block *new_block(unsigned int bid);
-Block *clone_chain(Block *head);
+Block *clone_chain(const Block *head);
 void free_block(Block *block);
 void free_chain(Block *head);
 
