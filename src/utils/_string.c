@@ -66,26 +66,27 @@ char* _strcat(char* dest, const char* source)
     return dest;
 }
 
-// char *_strtok(char *str, const char *delim)
-// {
-// 	static char *lastStr;
-// 	if (str != NULL)
-// 		lastStr = str;
-//
-// 	int letterCount = 0;
-// 	char *loopStr = lastStr;
-// 	while (*loopStr++ != *delim) {
-// 		letterCount++;
-// 	}
-// 	char *token = malloc(sizeof(char) * letterCount);
-//
-// 	while (*lastStr != *delim) {
-// 		*token++ = *lastStr++;
-// 	}
-//
-// 	while (*lastStr == delim) {
-// 		lastStr++;
-// 	}
-//
-// 	return token;
-// }
+/* _strsep: Our implemenation of stdlib strsep() from string.h library
+ * -------------------------------------------------------------------
+ * Function manipulates stringp so that no allocation of memory is required.
+ * Returns pointer to the next token (ie. adjacent chars leading up to 
+ * delim or '\0'). 
+ */
+char *_strsep(char **stringp, const char *delim)
+{
+	if (!**stringp)
+		return NULL;
+	char *og_stringp = *stringp;
+	while (**stringp != *delim && **stringp != '\0') {
+		(*stringp)++;
+	}
+	if (**stringp == '\0') {
+		return og_stringp;
+	} 
+	**stringp = '\0';
+	(*stringp)++;
+	while (**stringp == *delim) {
+		(*stringp)++;
+	}
+	return og_stringp;
+}
