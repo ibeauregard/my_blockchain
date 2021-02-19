@@ -26,7 +26,7 @@ void load_blockchain(Node *nodes)
     blockchain.num_nodes = count;
 }
 
-Node *get_node_list()
+Node *get_nodes()
 {
     return blockchain.head;
 }

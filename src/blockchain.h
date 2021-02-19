@@ -12,7 +12,7 @@ typedef struct s_blockchain {
 } Blockchain;
 
 void load_blockchain(Node *nodes);
-Node *get_node_list();
+Node *get_nodes();
 Node *get_node_from_id(unsigned int nid);
 void add_node(Node *node);
 void rmv_node(Node *node);
