@@ -1,14 +1,39 @@
-#include "parse.h"
+#include <stdio.h>
+#include <stdlib.h>                // For free
+
+#include "command.h"
 
 int main()
 {	
-	int parse;
-	while ((parse = parse_arg()) != 0) {
-		if (parse == -1) {
-			// error message
-		} else {
-			// do something
+	Command *command;
+	while ((command = get_cmd())) {
+		switch (command->maincmd) {
+		case UNDEFINED:
+			printf("bad command....\n");
+			break;
+		case ADD_NODE:
+			printf("adding node....\n");
+			break;
+		case ADD_BLOCK:
+			printf("adding block....\n");
+			break;
+		case RM_NODE:
+			printf("removing node....\n");
+			break;
+		case RM_BLOCK:
+			printf("removing block....\n");
+			break;
+		case LS:
+			printf("listing contents....\n");
+			break;
+		case SYNC:
+			printf("syncing....\n");
+			break;
+		case QUIT:
+			printf("quitting....\n");
+			goto quit;
 		}
 	}
-    return 0;
+	quit:
+	return 0;
 }
