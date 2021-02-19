@@ -30,8 +30,7 @@ void add_block(Block *block, Node *node)
         return;
     }
     block->prev = node->tail;
-    node->tail->next = block;
-    node->tail = block;
+    node->tail = node->tail->next = block;
 }
 
 void add_first_block(Block *block, Node *node)
@@ -67,12 +66,12 @@ void attach_dummy_head_and_tail(Node *node)
 
 void detach_dummy_head_and_tail(Node *node)
 {
-    Block *dummy_head = node->head;
+    Block *dummy_head = node->head->prev;
     node->head = dummy_head->next;
     node->head->prev = NULL;
     free_block(dummy_head);
 
-    Block  *dummy_tail = node->tail;
+    Block  *dummy_tail = node->tail->next;
     node->tail = dummy_tail->prev;
     node->tail->next = NULL;
     free_block(dummy_tail);

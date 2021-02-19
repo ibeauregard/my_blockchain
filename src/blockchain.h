@@ -3,9 +3,11 @@
 
 #include "node.h"
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef struct s_blockchain {
     Node *head;
+    Node *tail;
     size_t num_nodes;
 } Blockchain;
 
