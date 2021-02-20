@@ -116,3 +116,8 @@ bool all_nodes_are_empty()
     }
     return true;
 }
+
+void free_blockchain()
+{
+    free_node_chain(blockchain.head);
+}

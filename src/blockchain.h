@@ -18,5 +18,6 @@ void rmv_node(Node *node);
 size_t get_num_nodes();
 bool blockchain_is_synced();
 void synchronize();
+void free_blockchain();
 
 #endif
