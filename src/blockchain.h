@@ -11,7 +11,6 @@ typedef struct s_blockchain {
     size_t num_nodes;
 } Blockchain;
 
-void load_blockchain(Node *nodes);
 Node *get_nodes();
 Node *get_node_from_id(unsigned int nid);
 void add_node(Node *node);

@@ -12,20 +12,6 @@ static void attach_dummy_head_and_tail();
 static void detach_dummy_head_and_tail();
 static bool all_nodes_are_empty();
 
-void load_blockchain(Node *nodes)
-{
-    if (!nodes) {
-        return;
-    }
-    blockchain.head = nodes;
-    size_t count;
-    for (count = 1; nodes->next; count++) {
-        nodes = nodes->next;
-    }
-    blockchain.tail = nodes;
-    blockchain.num_nodes = count;
-}
-
 Node *get_nodes()
 {
     return blockchain.head;
