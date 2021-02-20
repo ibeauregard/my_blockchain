@@ -5,12 +5,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct s_blockchain {
-    Node *head;
-    Node *tail;
-    size_t num_nodes;
-} Blockchain;
-
 Node *get_nodes();
 Node *get_node_from_id(unsigned int nid);
 void add_node(Node *node);

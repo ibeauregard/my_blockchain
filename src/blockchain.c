@@ -1,5 +1,11 @@
 #include "blockchain.h"
 
+typedef struct s_blockchain {
+    Node *head;
+    Node *tail;
+    size_t num_nodes;
+} Blockchain;
+
 static Blockchain blockchain = {
         .head = NULL,
         .tail = NULL,
