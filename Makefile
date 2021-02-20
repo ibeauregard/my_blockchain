@@ -3,7 +3,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Werror -g3
 SANITIZE = -fsanitize=address
 LINKERFLAG = -lm
 
-SRCS = $(wildcard src/*.c) $(wildcard src/*/*.c)
+SRCS = $(wildcard src/*.c) $(wildcard src/*/*.c) $(wildcard src/*/*/*.c) $(wildcard src/*/*/*/*.c)
 SRC_OBJS = $(SRCS:.c=.o)
 TESTS = $(wildcard tests/*.c) $(wildcard tests/*/*.c)
 TESTS_OBJS = $(TESTS:.c=.o)

@@ -1,4 +1,7 @@
-#include "blockchain.h"
+#include "public.h"
+#include "node/public.h"
+#include "node/private.h"
+#include <stddef.h>
 
 typedef struct s_blockchain {
     Node *head;
