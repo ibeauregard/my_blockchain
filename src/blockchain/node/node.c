@@ -86,6 +86,11 @@ bool node_is_synced(const Node *node)
     return node->sync_tail == node->tail;
 }
 
+void declare_node_synced(Node *node)
+{
+    node->sync_tail = node->tail;
+}
+
 bool node_is_empty(const Node *node)
 {
     return !node->head;
