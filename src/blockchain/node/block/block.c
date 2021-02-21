@@ -1,5 +1,4 @@
-#include "public.h"
-#include "private.h"
+#include "block_private.h"
 #include <stdlib.h>
 
 static Block create_block(unsigned int bid);

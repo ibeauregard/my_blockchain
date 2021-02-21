@@ -1,7 +1,7 @@
-#ifndef NODE_PRIVATE_H
-#define NODE_PRIVATE_H
+#ifndef NODE_H
+#define NODE_H
 
-#include "type.h"
+#include "node_public.h"
 #include <stdbool.h>
 
 bool node_is_synced(const Node *node);

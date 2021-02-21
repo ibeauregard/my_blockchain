@@ -1,7 +1,5 @@
-#include "public.h"
-#include "private.h"
-#include "block/public.h"
-#include "block/private.h"
+#include "node_private.h"
+#include "block/block_private.h"
 #include <stdlib.h>
 
 static void add_first_block(Block *block, Node *node);

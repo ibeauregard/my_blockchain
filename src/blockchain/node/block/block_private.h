@@ -1,7 +1,7 @@
-#ifndef BLOCK_PRIVATE_H
-#define BLOCK_PRIVATE_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
-#include "type.h"
+#include "block_public.h"
 
 Block *clone_chain(const Block *head);
 void free_block(Block *block);

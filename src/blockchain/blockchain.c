@@ -1,6 +1,5 @@
-#include "public.h"
-#include "node/public.h"
-#include "node/private.h"
+#include "blockchain_private.h"
+#include "node/node_private.h"
 #include <stddef.h>
 
 typedef struct s_blockchain {

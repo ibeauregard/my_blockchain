@@ -1,7 +1,7 @@
-#ifndef BLOCKCHAIN_H
-#define BLOCKCHAIN_H
+#ifndef BLOCKCHAIN_PUBLIC_H
+#define BLOCKCHAIN_PUBLIC_H
 
-#include "node/type.h"
+#include "node/node_public.h"
 #include <stdbool.h>
 #include <stddef.h>
 
