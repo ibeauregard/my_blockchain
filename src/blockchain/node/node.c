@@ -41,7 +41,9 @@ void add_first_block(Block *block, Node *node)
 
 void rmv_block(Block *block, Node *node)
 {
-    if (node_is_empty(node)) {
+    if (node_is_empty(node) || node->head == node->tail) {
+        free_block(block);
+        node->head = node->tail = node->sync_tail = NULL;
         return;
     }
     attach_dummy_head_and_tail(node);
@@ -70,6 +72,9 @@ void detach_dummy_head_and_tail(Node *node)
     Block *dummy_head = node->head->prev;
     node->head = dummy_head->next;
     node->head->prev = NULL;
+    if (dummy_head == node->sync_tail) {
+        node->sync_tail = NULL;
+    }
     free_block(dummy_head);
 
     Block  *dummy_tail = node->tail->next;

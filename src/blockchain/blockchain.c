@@ -58,7 +58,10 @@ void add_first_node(Node *node)
 
 void rmv_node(Node *node)
 {
-    if (is_empty()) {
+    if (is_empty() || blockchain.head == blockchain.tail) {
+        free_node(node);
+        blockchain.head = blockchain.tail = NULL;
+        blockchain.num_nodes = 0;
         return;
     }
     attach_dummy_head_and_tail();
