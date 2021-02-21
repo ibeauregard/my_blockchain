@@ -16,11 +16,11 @@ TEST_EXEC = my_blockchain_test
 all: $(MAIN)
 
 $(MAIN): $(SRC_OBJS)
-	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
+	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^ $(MAIN).c
 
 test: $(TEST_EXEC)
 
-$(TEST_EXEC): $(TESTS_OBJS)
+$(TEST_EXEC): $(SRC_OBJS) $(TESTS_OBJS)
 	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
 	./$(TEST_EXEC)
 
