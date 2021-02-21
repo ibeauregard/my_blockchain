@@ -41,6 +41,17 @@ Block *clone_block(const Block *block, Block *prev)
     return clone;
 }
 
+Block *get_chain_tail(Block *head)
+{
+    if (!head) {
+        return NULL;
+    }
+    while (head->next) {
+        head = head->next;
+    }
+    return head;
+}
+
 void free_block(Block *block)
 {
     free(block);
