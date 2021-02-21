@@ -4,6 +4,7 @@
 #include "node_public.h"
 #include <stdbool.h>
 
+void add_chain(Block *head, Node *node);
 bool node_is_synced(const Node *node);
 void declare_node_synced(Node *node);
 bool node_is_empty(const Node *node);

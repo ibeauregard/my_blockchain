@@ -6,6 +6,7 @@ static Block dummy_head;
 static Block dummy_tail;
 
 static void add_first_block(Block *block, Node *node);
+static void add_first_chain(Block *head, Block *tail, Node *node);
 static void attach_dummy_head_and_tail(Node *node);
 static void detach_dummy_head_and_tail(Node *node);
 
@@ -41,6 +42,24 @@ void add_block(Block *block, Node *node)
 void add_first_block(Block *block, Node *node)
 {
     node->head = node->tail = block;
+}
+
+void add_chain(Block *head, Node *node)
+{
+    Block *tail = get_chain_tail(head);
+    if (node_is_empty(node)) {
+        add_first_chain(head, tail, node);
+        return;
+    }
+    head->prev = node->tail;
+    node->tail->next = head;
+    node->tail = tail;
+}
+
+void add_first_chain(Block *head, Block *tail, Node *node)
+{
+    node->head = head;
+    node->tail = tail;
 }
 
 void rmv_block(Block *block, Node *node)
