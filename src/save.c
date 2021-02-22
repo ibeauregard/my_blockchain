@@ -12,7 +12,7 @@ static int save_block(int fildes, Block *block)
 static int save_node(int fildes, Node *node)
 {
 	int print_count = 0;
-	print_count += dprintf(fildes, "%d:%d:", node->id, node->sync_tail->id);
+	print_count += dprintf(fildes, "%d:%d:", node->id, node->sync_tail ? node->sync_tail->id : -1);
 	Block *current_block = node->head;
 	while (current_block) {
 		print_count += save_block(fildes, current_block);
