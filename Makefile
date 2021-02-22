@@ -3,7 +3,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Werror -g3
 SANITIZE = -fsanitize=address
 LINKERFLAG = -lm
 
-SRCS = $(wildcard src/*.c) $(wildcard src/*/*.c)
+SRCS = $(wildcard src/*.c) $(wildcard src/*/*.c) $(wildcard src/*/*/*.c) $(wildcard src/*/*/*/*.c)
 SRC_OBJS = $(SRCS:.c=.o)
 TESTS = $(wildcard tests/*.c) $(wildcard tests/*/*.c)
 TESTS_OBJS = $(TESTS:.c=.o)
@@ -16,11 +16,11 @@ TEST_EXEC = my_blockchain_test
 all: $(MAIN)
 
 $(MAIN): $(SRC_OBJS)
-	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
+	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^ $(MAIN).c
 
 test: $(TEST_EXEC)
 
-$(TEST_EXEC): $(TESTS_OBJS)
+$(TEST_EXEC): $(SRC_OBJS) $(TESTS_OBJS)
 	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
 	./$(TEST_EXEC)
 

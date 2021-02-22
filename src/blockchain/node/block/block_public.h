@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef BLOCK_PUBLIC_H
+#define BLOCK_PUBLIC_H
 
 typedef struct s_block {
     unsigned int id;
@@ -8,8 +8,5 @@ typedef struct s_block {
 } Block;
 
 Block *new_block(unsigned int bid);
-Block *clone_chain(const Block *head);
-void free_block(Block *block);
-void free_chain(Block *head);
 
 #endif
