@@ -105,7 +105,7 @@ size_t get_num_nodes()
 
 bool blockchain_is_synced()
 {
-    if (all_nodes_are_empty()) {
+    if (all_nodes_are_empty() || blockchain.num_nodes == 1) {
         return true;
     }
     Node *node = blockchain.head;
