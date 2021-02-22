@@ -14,14 +14,30 @@ void test_blockchain_sample()
     printf("%s\n", "Printing empty blockchain; should be empty");
     print_blockchain();
 
+    printf("%s\n", "Sync empty blockchain");
+    synchronize();
+    print_blockchain();
+
     printf("%s\n", "Adding one node");
     Node *node = new_node(1);
     add_node(node);
     print_blockchain();
 
+    printf("%s\n", "Sync blockchain with one empty node");
+    synchronize();
+    print_blockchain();
+
     printf("%s\n", "Adding one block to that node");
     Block *block = new_block(1);
     add_block(block, node);
+    print_blockchain();
+
+    printf("%s\n", "Sync blockchain with one node containing one block");
+    synchronize();
+    print_blockchain();
+
+    printf("%s\n", "Resync blockchain with one node containing one block");
+    synchronize();
     print_blockchain();
 
     printf("%s\n", "Adding several nodes and several blocks");
