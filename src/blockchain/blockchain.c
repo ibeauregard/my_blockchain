@@ -66,7 +66,7 @@ void add_first_node(Node *node)
 
 void rmv_node(Node *node)
 {
-    if (is_empty() || blockchain.head == blockchain.tail) {
+    if (is_empty() || blockchain.num_nodes == 1) {
         free_node(node);
         blockchain.head = blockchain.tail = NULL;
         blockchain.num_nodes = 0;
