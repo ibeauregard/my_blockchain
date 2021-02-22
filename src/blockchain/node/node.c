@@ -9,6 +9,7 @@ static void detach_dummy_head_and_tail(Node *node);
 Node *new_node(unsigned int nid)
 {
     Node *node = malloc(sizeof (Node));
+    if (!node) return NULL;
     node->id = nid;
     node->head = node->sync_tail = node->tail = NULL;
     node->prev = node->next = NULL;

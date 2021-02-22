@@ -7,6 +7,7 @@ static Block *clone_block(const Block *block, Block *prev);
 Block *new_block(unsigned int bid)
 {
     Block *block = malloc(sizeof (Block));
+    if (!block) return NULL;
     block->id = bid;
     block->prev = NULL;
     block->next = NULL;
