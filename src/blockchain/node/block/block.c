@@ -20,6 +20,7 @@ Block *clone_chain(const Block *head)
     Block *clone = &clone_dummy_head;
     while (head) {
         clone = clone_block(head, clone);
+        if (!clone) return NULL;
         head = head->next;
     }
     clone = clone_dummy_head.next;
@@ -36,6 +37,7 @@ Block create_block(unsigned int bid)
 Block *clone_block(const Block *block, Block *prev)
 {
     Block *clone = new_block(block->id);
+    if (!clone) return NULL;
     prev->next = clone;
     clone->prev = prev;
     return clone;
@@ -43,9 +45,6 @@ Block *clone_block(const Block *block, Block *prev)
 
 Block *get_chain_tail(Block *head)
 {
-    if (!head) {
-        return NULL;
-    }
     while (head->next) {
         head = head->next;
     }

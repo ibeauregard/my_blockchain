@@ -9,6 +9,7 @@ static void add_first_block(Block *block, Node *node);
 static void add_first_chain(Block *head, Block *tail, Node *node);
 static void attach_dummy_head_and_tail(Node *node);
 static void detach_dummy_head_and_tail(Node *node);
+static bool node_has_one_block(const Node *node);
 
 Node *new_node(unsigned int nid)
 {
@@ -18,6 +19,24 @@ Node *new_node(unsigned int nid)
     node->head = node->sync_tail = node->tail = NULL;
     node->prev = node->next = NULL;
     return node;
+}
+
+Node create_node(unsigned int nid)
+{
+    Node node = {
+            .id = nid,
+            .head = NULL,
+            .sync_tail = NULL,
+            .tail = NULL,
+            .prev = NULL,
+            .next = NULL
+    };
+    return node;
+}
+
+bool has_block_with_id(unsigned int bid, Node *node)
+{
+    return get_block_from_id(bid, node) != NULL;
 }
 
 Block *get_block_from_id(unsigned int bid, Node *node)
@@ -44,6 +63,11 @@ void add_first_block(Block *block, Node *node)
     node->head = node->tail = block;
 }
 
+Block *get_post_sync_chain(const Node *node)
+{
+    return node->sync_tail ? node->sync_tail->next : node->head;
+}
+
 void add_chain(Block *head, Node *node)
 {
     Block *tail = get_chain_tail(head);
@@ -64,7 +88,7 @@ void add_first_chain(Block *head, Block *tail, Node *node)
 
 void rmv_block(Block *block, Node *node)
 {
-    if (node_is_empty(node) || node->head == node->tail) {
+    if (node_is_empty(node) || node_has_one_block(node)) {
         free_block(block);
         node->head = node->tail = node->sync_tail = NULL;
         return;
@@ -113,6 +137,11 @@ void declare_node_synced(Node *node)
 bool node_is_empty(const Node *node)
 {
     return !node->head;
+}
+
+bool node_has_one_block(const Node *node)
+{
+    return node->head == node->tail;
 }
 
 void free_node(Node *node)

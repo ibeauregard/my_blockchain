@@ -1,6 +1,7 @@
 #include "blockchain_private.h"
 #include "node/node_private.h"
-#include <stddef.h>
+#include "node/block/block_private.h"
+#include <stdlib.h>
 
 typedef struct s_blockchain {
     Node *head;
@@ -17,10 +18,17 @@ static void add_first_node(Node *node);
 static void attach_dummy_head_and_tail();
 static void detach_dummy_head_and_tail();
 static bool all_nodes_are_empty();
+static int fill_dummy_sync_node();
+static int sync_nodes(const Node *dummy_sync_node);
 
 Node *get_nodes()
 {
     return blockchain.head;
+}
+
+bool has_node_with_id(unsigned int nid)
+{
+    return get_node_from_id(nid) != NULL;
 }
 
 Node *get_node_from_id(unsigned int nid)
@@ -120,9 +128,47 @@ bool all_nodes_are_empty()
     return true;
 }
 
-void synchronize()
+int synchronize()
 {
+    Node dummy_sync_node = create_node(0);
+    fill_dummy_sync_node(&dummy_sync_node);
+    sync_nodes(&dummy_sync_node);
+    free_chain(dummy_sync_node.head);
+    return EXIT_SUCCESS;
+}
 
+int fill_dummy_sync_node(Node *dummy_sync_node)
+{
+    Node *node = blockchain.head;
+    while (node) {
+        Block *post_sync_block = get_post_sync_chain(node);
+        while (post_sync_block) {
+            Block *current = post_sync_block;
+            post_sync_block = current->next;
+            if (!has_block_with_id(current->id, dummy_sync_node)) {
+                Block *clone = new_block(current->id);
+                if (!clone) return EXIT_FAILURE;
+                add_block(clone, dummy_sync_node);
+            }
+            rmv_block(current, node);
+        }
+        node = node->next;
+    }
+    return EXIT_SUCCESS;
+}
+
+int sync_nodes(const Node *dummy_sync_node)
+{
+    if (node_is_empty(dummy_sync_node)) return EXIT_SUCCESS;
+    Node *node = blockchain.head;
+    while (node) {
+        Block* clone = clone_chain(dummy_sync_node->head);
+        if (!clone) return EXIT_FAILURE;
+        add_chain(clone, node);
+        declare_node_synced(node);
+        node = node->next;
+    }
+    return EXIT_SUCCESS;
 }
 
 void free_blockchain()
