@@ -8,11 +8,9 @@ typedef struct s_blockchain {
     size_t num_nodes;
 } Blockchain;
 
-static Blockchain blockchain = {
-        .head = NULL,
-        .tail = NULL,
-        .num_nodes = 0
-};
+static Blockchain blockchain;
+static Node dummy_head;
+static Node dummy_tail;
 
 static bool is_empty();
 static void add_first_node(Node *node);
@@ -74,26 +72,20 @@ void rmv_node(Node *node)
 
 void attach_dummy_head_and_tail()
 {
-    Node *dummy_head = new_node(0);
-    blockchain.head->prev = dummy_head;
-    dummy_head->next = blockchain.head;
+    blockchain.head->prev = &dummy_head;
+    dummy_head.next = blockchain.head;
 
-    Node *dummy_tail = new_node(0);
-    blockchain.tail->next = dummy_tail;
-    dummy_tail->prev = blockchain.tail;
+    blockchain.tail->next = &dummy_tail;
+    dummy_tail.prev = blockchain.tail;
 }
 
 void detach_dummy_head_and_tail()
 {
-    Node *dummy_head = blockchain.head->prev;
-    blockchain.head = dummy_head->next;
+    blockchain.head = dummy_head.next;
     blockchain.head->prev = NULL;
-    free_node(dummy_head);
 
-    Node  *dummy_tail = blockchain.tail->next;
-    blockchain.tail = dummy_tail->prev;
+    blockchain.tail = dummy_tail.prev;
     blockchain.tail->next = NULL;
-    free_node(dummy_tail);
 }
 
 size_t get_num_nodes()

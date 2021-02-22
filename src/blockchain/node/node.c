@@ -2,6 +2,9 @@
 #include "block/block_private.h"
 #include <stdlib.h>
 
+static Block dummy_head;
+static Block dummy_tail;
+
 static void add_first_block(Block *block, Node *node);
 static void attach_dummy_head_and_tail(Node *node);
 static void detach_dummy_head_and_tail(Node *node);
@@ -59,29 +62,23 @@ void rmv_block(Block *block, Node *node)
 
 void attach_dummy_head_and_tail(Node *node)
 {
-    Block *dummy_head = new_block(0);
-    node->head->prev = dummy_head;
-    dummy_head->next = node->head;
+    node->head->prev = &dummy_head;
+    dummy_head.next = node->head;
 
-    Block *dummy_tail = new_block(0);
-    node->tail->next = dummy_tail;
-    dummy_tail->prev = node->tail;
+    node->tail->next = &dummy_tail;
+    dummy_tail.prev = node->tail;
 }
 
 void detach_dummy_head_and_tail(Node *node)
 {
-    Block *dummy_head = node->head->prev;
-    node->head = dummy_head->next;
+    node->head = dummy_head.next;
     node->head->prev = NULL;
-    if (dummy_head == node->sync_tail) {
+    if (&dummy_head == node->sync_tail) {
         node->sync_tail = NULL;
     }
-    free_block(dummy_head);
 
-    Block  *dummy_tail = node->tail->next;
-    node->tail = dummy_tail->prev;
+    node->tail = dummy_tail.prev;
     node->tail->next = NULL;
-    free_block(dummy_tail);
 }
 
 bool node_is_synced(const Node *node)
