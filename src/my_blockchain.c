@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>                // For free
 
-#include "src/command.h"
+#include "command.h"
 
 int main()
 {	
