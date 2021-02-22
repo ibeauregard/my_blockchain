@@ -29,11 +29,7 @@ Block *clone_chain(const Block *head)
 
 Block create_block(unsigned int bid)
 {
-    Block block = {
-            .id = bid,
-            .prev = NULL,
-            .next = NULL
-    };
+    Block block = {.id = bid};
     return block;
 }
 
