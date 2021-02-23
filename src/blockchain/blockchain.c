@@ -210,6 +210,7 @@ static void advance_sync_tails(Block *sync_tails[]);
 
 void update_sync_state()
 {
+    if (blockchain.num_nodes == 0) return;
     Block *dummy_heads[blockchain.num_nodes];
     Block *sync_tails[blockchain.num_nodes];
     update_sync_state_setup(dummy_heads, sync_tails);
