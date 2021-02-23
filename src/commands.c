@@ -32,13 +32,15 @@
 #include <stdlib.h>                          // For EXIT_[X]
 #include <unistd.h>                          // For STDIN
 
-#include "blockchain/blockchain_public.h"
 #include "commands.h"
+#include "blockchain/blockchain_public.h"
 #include "save.h"
 #include "parse.h"
+#include "utils/_string.h"
 #include "utils/_readline.h"
 
 #define SAVE_PATHNAME "my_blockchain.save"
+#define MAX_PROMPT_SIZE 64
 
 /* print_cmd: Used for debugging - prints struct Command.
  */
@@ -106,8 +108,27 @@ void free_cmd(Command *command)
 	}
 }
 
+/* print_prompt: prints either [sX] or [-X] where X is the number of 
+ * nodes in chain, 's' indicates nodes are synced, and '-' indictes 
+ * nodes are not synced.
+ */
+void print_prompt() 
+{
+	char sync_state = blockchain_is_synced() ? 's' : '-';
+	size_t n_nodes = get_num_nodes();
+	char buffer[MAX_PROMPT_SIZE];
+	// If try and use printf, may not always print before the
+	// _readline command due to buffering / compiler optimization.
+	sprintf(buffer, "[%c%ld]> ", sync_state, n_nodes);
+	write(STDIN_FILENO, buffer, _strlen(buffer));
+}
+
+/* get_cmd: Really just a wrapper function that combines printing the
+ * prompt, reading from STDIN, then parsing the string to get Command.
+ */
 Command *get_cmd()
 {
+	print_prompt();
 	Command *command = new_cmd();
 	char *line = _readline(STDIN_FILENO);
 	parse_cmd(command, line);
@@ -131,25 +152,60 @@ int cmd_add_node(Command *command)
 int cmd_add_block(Command *command)
 {
 	unsigned int bid = *(command->bidlist);
-	unsigned int *nidlist = command->nidlist;
-	size_t nidcount = command->nidcount;
-	for (size_t i = 0; i < nidcount; i++) {
-		unsigned int nid = *(nidlist + i);
-		if (!has_node_with_id(nid)) continue;
-		Node *node = get_node_from_id(nid);
-		if (has_block_with_id(bid, node)) continue;
-		Block *block = new_block(bid);
-		add_block(block, node);
+
+	// If all nodes to be impacted
+	if (command->all) {
+		Node *node = get_nodes();
+		while (node) {
+			if (has_block_with_id(bid, node)) continue;
+			Block *block = new_block(bid);
+			add_block(block, node);
+			node = node->next;
+		}
 	}
+
+	// If all flag not specified
+	else {
+		unsigned int *nidlist = command->nidlist;
+		size_t nidcount = command->nidcount;
+		for (size_t i = 0; i < nidcount; i++) {
+			unsigned int nid = *(nidlist + i);
+			if (!has_node_with_id(nid)) continue;
+			Node *node = get_node_from_id(nid);
+			if (has_block_with_id(bid, node)) continue;
+			Block *block = new_block(bid);
+			add_block(block, node);
+		}
+	}
+
 	update_sync_state();
 	return EXIT_SUCCESS;
 }
 
 int cmd_rm_node(Command *command)
 {
-	unsigned int nid = *(command->nidlist);
-	if (!has_node_with_id(nid)) return EXIT_FAILURE;
-	rmv_node(get_node_from_id(nid));
+	// If all nodes to be deleted
+	if (command->all) {
+		Node *node = get_nodes();
+		while (node) {
+			Node *next_node = node->next;
+			rmv_node(node);
+			node = next_node;
+		}
+		return EXIT_SUCCESS;
+	}
+
+	// If all flag not specified
+	else {
+		unsigned int *nidlist = command->nidlist;
+		size_t nidcount = command->nidcount;
+		for (size_t i = 0; i < nidcount; i++) {
+			unsigned int nid = *(nidlist + i);
+			if (!has_node_with_id(nid)) return EXIT_FAILURE;
+			rmv_node(get_node_from_id(nid));
+		}
+	}
+
 	update_sync_state();
 	return EXIT_SUCCESS;
 }
