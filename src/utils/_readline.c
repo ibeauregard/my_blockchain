@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
 #define READLINE_READ_SIZE 512
 #define NEWLINE '\n'
@@ -39,8 +40,9 @@ char* _readline(int fd)
 ushort fill(ReadBuffer* buffer, int fd)
 {
     reset_index(buffer);
-    ushort chars_read = read(fd, &buffer->array[buffer->length], READLINE_READ_SIZE);
-    if (errno) return 0;
+    ssize_t s_chars_r = read(fd, &buffer->array[buffer->length], READLINE_READ_SIZE);
+    ushort chars_read = (ushort) s_chars_r;
+    if (s_chars_r == -1) return 0;
     buffer->length += chars_read;
     buffer->array[buffer->length] = 0;
     return chars_read;
