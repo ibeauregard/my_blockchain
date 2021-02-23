@@ -4,7 +4,7 @@
 
 int main()
 {	
-	printf("%d\n", load_cmd());
+	load_blockchain();
 	Command *command;
 	while ((command = get_cmd())) {
 		switch (command->maincmd) {

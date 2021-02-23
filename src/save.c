@@ -100,26 +100,23 @@ static Node *load_node(char *nidline)
 }
 
 // load will fail if duplicate blocks or duplicate nodes or bad sync_tail
-static int load_blockchain(int fildes, Node *head_node)
+static int load_blockchain(int fildes)
 {
 	char *line;
-	Node *node = head_node;
+	Node *node;
 	while ((line = _readline(fildes)) != NULL) {
 		if ((node = load_node(line)) == NULL) return EXIT_FAILURE;
+		add_node(node);
 		free(line);
 		line = NULL;
-		node = node->next;
 	}
-	// XXX: Next Steps: Figure out why fd opens but line returns null
-	printf("fd: %d, line: %s\n", fildes, line);
 	return EXIT_SUCCESS;
 }
 
 int load(char *filename)
 {
-	printf("filename: %s\n", filename);
 	int fd = open(filename, O_RDONLY);
-	Node *head_node = get_nodes();
+	// Node *head_node = get_nodes();
 	if (fd == -1) return EXIT_FAILURE;
-	return load_blockchain(fd, head_node);
+	return load_blockchain(fd);
 }

@@ -39,7 +39,6 @@
 #include "utils/_readline.h"
 
 #define SAVE_PATHNAME "my_blockchain.save"
-#define SAVE_PATHNAME_TEST "my_blockchain_test.save"
 
 /* print_cmd: Used for debugging - prints struct Command.
  */
@@ -116,9 +115,9 @@ Command *get_cmd()
 	return command;
 }
 
-int load_cmd()
+int load_blockchain()
 {
-	return load(SAVE_PATHNAME_TEST);
+	return load(SAVE_PATHNAME);
 }
 
 int cmd_add_node(Command *command)
