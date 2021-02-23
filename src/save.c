@@ -1,8 +1,13 @@
 #include <stdio.h>                 // For dprintf
+#include <stdlib.h>                // For EXIT_[X], free
 #include <fcntl.h>                 // For open
+#include <unistd.h>                // For STDIN
 #include <sys/stat.h>              // For fchmod
 
 #include "blockchain/blockchain_public.h"
+#include "utils/_string.h"         // For _strsep
+#include "utils/_stdlib.h"         // For _strtol
+#include "utils/_readline.h"
 
 static int save_block(int fildes, Block *block) 
 {
@@ -56,4 +61,65 @@ int save(const char *filename, Node *head_node)
 	// use fchmod. Give file 764 righs (rwxrw-r--).
 	fchmod(fd, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWOTH | S_IROTH);
 	return save_blockchain(fd, head_node);
+}
+
+static Block *load_block(unsigned int bid, Node *node)
+{
+	if (has_block_with_id(bid, node)) return NULL;
+	Block *block = new_block(bid);
+	add_block(block, node);
+	return block;
+}
+
+static Node *load_node(char *nidline)
+{
+	// First token: nid.
+	char delim = ':';
+	char *token = _strsep(&nidline, &delim);
+	unsigned int nid = _strtol(token, NULL, 10);
+	if (has_node_with_id(nid)) return NULL;
+	Node *node = new_node(nid);
+
+	// Second token: sync_tail
+	token = _strsep(&nidline, &delim);
+	long int sync_tail_as_uint = _strtol(token, NULL, 10);
+
+	// Remaining tokens: bids. Also set sync_tail to block if required.
+	delim = ',';
+	while ((token = _strsep(&nidline, &delim)) != NULL) {
+		unsigned int bid = _strtol(token, NULL, 10);
+		Block *curr_block;
+		if ((curr_block = load_block(bid, node)) == NULL) return NULL;
+		if (bid == sync_tail_as_uint) node->sync_tail = curr_block;
+	}
+	
+	// Verify that sync_tail was found in list of blocks
+	if (!node->sync_tail && (sync_tail_as_uint != -1)) return NULL;
+
+	return node;
+}
+
+// load will fail if duplicate blocks or duplicate nodes or bad sync_tail
+static int load_blockchain(int fildes, Node *head_node)
+{
+	char *line;
+	Node *node = head_node;
+	while ((line = _readline(fildes)) != NULL) {
+		if ((node = load_node(line)) == NULL) return EXIT_FAILURE;
+		free(line);
+		line = NULL;
+		node = node->next;
+	}
+	// XXX: Next Steps: Figure out why fd opens but line returns null
+	printf("fd: %d, line: %s\n", fildes, line);
+	return EXIT_SUCCESS;
+}
+
+int load(char *filename)
+{
+	printf("filename: %s\n", filename);
+	int fd = open(filename, O_RDONLY);
+	Node *head_node = get_nodes();
+	if (fd == -1) return EXIT_FAILURE;
+	return load_blockchain(fd, head_node);
 }

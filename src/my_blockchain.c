@@ -4,6 +4,7 @@
 
 int main()
 {	
+	printf("%d\n", load_cmd());
 	Command *command;
 	while ((command = get_cmd())) {
 		switch (command->maincmd) {

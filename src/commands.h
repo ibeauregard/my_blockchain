@@ -20,6 +20,7 @@ typedef struct s_command {
 void free_cmd(Command *command);
 void print_cmd(Command *command);
 Command *get_cmd();
+int load_cmd();
 
 int cmd_add_node(Command *command);
 int cmd_add_block(Command *command);
