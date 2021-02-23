@@ -2,6 +2,7 @@
 #include <stdlib.h>                // For free
 
 #include "command.h"
+#include "commands.h"
 
 int main()
 {	
@@ -13,9 +14,11 @@ int main()
 			printf("bad command....\n");
 			break;
 		case ADD_NODE:
+			cmd_add_node(command);
 			printf("adding node....\n");
 			break;
 		case ADD_BLOCK:
+			cmd_add_block(command);
 			printf("adding block....\n");
 			break;
 		case RM_NODE:
@@ -31,6 +34,7 @@ int main()
 			printf("syncing....\n");
 			break;
 		case QUIT:
+			cmd_quit();
 			printf("quitting....\n");
 			goto quit;
 		}
