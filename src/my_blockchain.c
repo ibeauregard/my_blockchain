@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "command.h"
 #include "commands.h"
 
 int main()
