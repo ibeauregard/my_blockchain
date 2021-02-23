@@ -56,11 +56,11 @@ static int save_blockchain(int fildes, Node *head_node)
  */
 int save(const char *filename, Node *head_node)
 {
-	int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC );
+	// Give file 764 righs (rwxrw-r--).
+	int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC,
+	                        S_IRUSR | S_IWUSR | S_IXUSR | 
+	            	        S_IRGRP | S_IWOTH | S_IROTH);
 	if (fd == -1) return fd;
-	// XXX: May want to remove this before production. Not supposed to 
-	// use fchmod. Give file 764 righs (rwxrw-r--).
-	fchmod(fd, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWOTH | S_IROTH);
 	return save_blockchain(fd, head_node);
 }
 
