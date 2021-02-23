@@ -18,6 +18,7 @@ static void add_first_node(Node *node);
 static void attach_dummy_head_and_tail();
 static void detach_dummy_head_and_tail();
 static bool all_nodes_are_empty();
+static void desync();
 static int fill_dummy_sync_node();
 static int put_node_content_in_dummy_sync_node(Node *node, Node *dummy_sync_node);
 static int put_block_in_dummy_sync_node(Block *block, Node *dummy_sync_node);
@@ -48,6 +49,7 @@ void add_node(Node *node)
         add_first_node(node);
         return;
     }
+    desync();
     node->prev = blockchain.tail;
     blockchain.tail = blockchain.tail->next = node;
     blockchain.num_nodes++;
@@ -105,7 +107,7 @@ size_t get_num_nodes()
 
 bool blockchain_is_synced()
 {
-    if (all_nodes_are_empty()) {
+    if (all_nodes_are_empty() || blockchain.num_nodes == 1) {
         return true;
     }
     Node *node = blockchain.head;
@@ -128,6 +130,15 @@ bool all_nodes_are_empty()
         node = node->next;
     }
     return true;
+}
+
+void desync()
+{
+    Node *node = blockchain.head;
+    while (node) {
+        node->sync_tail = NULL;
+        node = node->next;
+    }
 }
 
 int synchronize()

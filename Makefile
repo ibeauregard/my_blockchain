@@ -36,6 +36,6 @@ clean:
 	$(RM) $(SRC_OBJS) $(TESTS_OBJS)
 
 fclean: clean
-	$(RM) $(MAIN) $(TEST_MAIN)
+	$(RM) $(MAIN) $(TEST_MAIN) *.save
 
 re: fclean all
