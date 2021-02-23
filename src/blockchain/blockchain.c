@@ -57,6 +57,15 @@ void add_first_node(Node *node)
     blockchain.num_nodes = 1;
 }
 
+void desync()
+{
+    Node *node = blockchain.head;
+    while (node) {
+        node->sync_tail = NULL;
+        node = node->next;
+    }
+}
+
 static void attach_dummy_head_and_tail();
 static void detach_dummy_head_and_tail();
 
@@ -129,15 +138,6 @@ bool all_nodes_are_empty()
         node = node->next;
     }
     return true;
-}
-
-void desync()
-{
-    Node *node = blockchain.head;
-    while (node) {
-        node->sync_tail = NULL;
-        node = node->next;
-    }
 }
 
 static int fill_dummy_sync_node();
