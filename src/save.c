@@ -1,3 +1,20 @@
+/* save.c: Contains logic for saving (or serializing) blockchain object
+ * onto disk and loading (or de-serializing) that same information.
+ *
+ * A few "design" decisions: 
+ *
+ * - save() will serialize blockchain in the following format:
+ *          [nid]:[bid],[bid],...
+ *          [nid]:[bid],[bid],...
+ *          ...
+ *
+ * - load() will fail on 3 conditions: 1) duplicate blocks, 2) duplicate
+ *   nodes, 3) failure to open file. The first two conditions indicates
+ *   that the file is corrupted while the latter indicates that no file 
+ *   exists. Either way a new blockchain should be created.
+ *
+ */
+
 #include <stdio.h>                 // For dprintf
 #include <stdlib.h>                // For EXIT_[X], free
 #include <fcntl.h>                 // For open
@@ -39,12 +56,6 @@ static int save_blockchain(int fildes, Node *head_node)
 	return print_count;
 }
 
-/* save: Will serialize blockchain in the following format:
- *            [nid]:[sync_tail]:[bid],[bid],...
- *            [nid]:[sync_tail]:[bid],[bid],...
- *            ...
- * Returns the number of bytes printed, otherwise -1 if error.
- */
 int save(const char *filename, Node *head_node)
 {
 	// Give file 744 righs (rwxr--r--).
@@ -82,7 +93,6 @@ static Node *load_node(char *nidline)
 	return node;
 }
 
-// load will fail if duplicate blocks or duplicate nodes 
 static int load_blockchain(int fildes)
 {
 	char *line;
