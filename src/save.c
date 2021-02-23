@@ -17,15 +17,6 @@ static int save_block(int fildes, Block *block)
 static int save_node(int fildes, Node *node)
 {
 	int print_count = 0;
-	// We have this conditional to avoid the error type error with unsigned
-	// int (node->sync_tail->id) and signed int (-1). Ideally we have a
-	// signed type that could guarantee that it would hold unsigned int.
-	// if (node->sync_tail) {
-	// 	print_count += dprintf(fildes, "%d:%d:", node->id
-	// 	                                       , node->sync_tail->id);
-	// } else {
-	// 	print_count += dprintf(fildes, "%d:%d:", node->id, -1);
-	// }
 	print_count += dprintf(fildes, "%d:", node->id);
 	Block *current_block = node->head;
 	while (current_block) {
@@ -56,10 +47,9 @@ static int save_blockchain(int fildes, Node *head_node)
  */
 int save(const char *filename, Node *head_node)
 {
-	// Give file 764 righs (rwxrw-r--).
+	// Give file 744 righs (rwxr--r--).
 	int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC,
-	                        S_IRUSR | S_IWUSR | S_IXUSR | 
-	            	        S_IRGRP | S_IWOTH | S_IROTH);
+	                        S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
 	if (fd == -1) return fd;
 	return save_blockchain(fd, head_node);
 }
@@ -81,22 +71,14 @@ static Node *load_node(char *nidline)
 	if (has_node_with_id(nid)) return NULL;
 	Node *node = new_node(nid);
 
-	// Second token: sync_tail
-	// token = _strsep(&nidline, &delim);
-	// long int sync_tail_as_uint = _strtol(token, NULL, 10);
-
 	// Remaining tokens: bids.
 	delim = ',';
 	while ((token = _strsep(&nidline, &delim)) != NULL) {
 		unsigned int bid = _strtol(token, NULL, 10);
 		Block *curr_block;
 		if ((curr_block = load_block(bid, node)) == NULL) return NULL;
-		// if (bid == sync_tail_as_uint) node->sync_tail = curr_block;
 	}
 	
-	// Verify that sync_tail was found in list of blocks
-	// if (!node->sync_tail && (sync_tail_as_uint != -1)) return NULL;
-
 	return node;
 }
 
