@@ -7,34 +7,30 @@ int main()
 {	
 	Command *command;
 	while ((command = get_cmd())) {
-		print_cmd(command);
 		switch (command->maincmd) {
 		case UNDEFINED:
 			printf("bad command....\n");
 			break;
 		case ADD_NODE:
 			cmd_add_node(command);
-			printf("adding node....\n");
 			break;
 		case ADD_BLOCK:
 			cmd_add_block(command);
-			printf("adding block....\n");
 			break;
 		case RM_NODE:
-			printf("removing node....\n");
+			cmd_rm_node(command);
 			break;
 		case RM_BLOCK:
-			printf("removing block....\n");
+			cmd_rm_block(command);
 			break;
 		case LS:
-			printf("listing contents....\n");
+			cmd_ls(command);
 			break;
 		case SYNC:
-			printf("syncing....\n");
+			cmd_sync();
 			break;
 		case QUIT:
 			cmd_quit();
-			printf("quitting....\n");
 			goto quit;
 		}
 	}

@@ -12,7 +12,15 @@ static int save_block(int fildes, Block *block)
 static int save_node(int fildes, Node *node)
 {
 	int print_count = 0;
-	print_count += dprintf(fildes, "%d:%d:", node->id, node->sync_tail ? node->sync_tail->id : -1);
+	// We have this conditional to avoid the error type error with unsigned
+	// int (node->sync_tail->id) and signed int (-1). Ideally we have a
+	// signed type that could guarantee that it would hold unsigned int.
+	if (node->sync_tail) {
+		print_count += dprintf(fildes, "%d:%d:", node->id
+		                                       , node->sync_tail->id);
+	} else {
+		print_count += dprintf(fildes, "%d:%d:", node->id, -1);
+	}
 	Block *current_block = node->head;
 	while (current_block) {
 		print_count += save_block(fildes, current_block);

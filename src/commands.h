@@ -7,12 +7,10 @@
 
 int cmd_add_node(Command *command);
 int cmd_add_block(Command *command);
+int cmd_rm_node(Command *command);
+int cmd_rm_block(Command *command);
+void cmd_ls(Command *command);
+int cmd_sync();
 int cmd_quit();
-/*
-void rmv_nodes(UintArray *nids);
-void rmv_blocks(UintArray *bids);
-void ls(bool show_bids);
-void sync_blockchain();
-*/
 
 #endif

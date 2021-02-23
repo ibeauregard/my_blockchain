@@ -132,9 +132,9 @@ static void set_add_cmd(Command *command, char **line)
 		}
 	} else if (!_strcmp("block", token)) {
 		command->maincmd = ADD_BLOCK;
-		set_id_list(command, line, 1, 'n');
-		set_id_list(command, line, 0, 'b');
-		if ((!command->bidcount && !command->all) || !command->nidcount) {
+		set_id_list(command, line, 1, 'b');
+		set_id_list(command, line, 0, 'n');
+		if ((!command->nidcount && !command->all) || !command->bidcount) {
 			command->maincmd = UNDEFINED;
 		}
 	} 
@@ -159,7 +159,7 @@ static void set_rm_cmd(Command *command, char **line)
 	} else if (!_strcmp("block", token)) {
 		command->maincmd = RM_BLOCK;
 		set_id_list(command, line, 0, 'b');
-		if (!command->bidcount || (!command->nidcount && !command->all)) {
+		if (!command->bidcount) {
 			command->maincmd = UNDEFINED;
 		}
 	} 
