@@ -1,36 +1,35 @@
 #include <stdio.h>
 
-#include "command.h"
+#include "commands.h"
 
 int main()
 {	
 	Command *command;
 	while ((command = get_cmd())) {
-		print_cmd(command);
 		switch (command->maincmd) {
 		case UNDEFINED:
 			printf("bad command....\n");
 			break;
 		case ADD_NODE:
-			printf("adding node....\n");
+			cmd_add_node(command);
 			break;
 		case ADD_BLOCK:
-			printf("adding block....\n");
+			cmd_add_block(command);
 			break;
 		case RM_NODE:
-			printf("removing node....\n");
+			cmd_rm_node(command);
 			break;
 		case RM_BLOCK:
-			printf("removing block....\n");
+			cmd_rm_block(command);
 			break;
 		case LS:
-			printf("listing contents....\n");
+			cmd_ls(command);
 			break;
 		case SYNC:
-			printf("syncing....\n");
+			cmd_sync();
 			break;
 		case QUIT:
-			printf("quitting....\n");
+			cmd_quit();
 			goto quit;
 		}
 	}

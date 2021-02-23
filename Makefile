@@ -23,13 +23,13 @@ TESTS_OBJS = $(TESTS:.c=.o)
 
 all: $(MAIN)
 
-$(MAIN): $(SRC_OBJS)
-	$(CC) $(CFLAGS) $(SANITIZE) $(SRC) -o $@ $(LINKERFLAG) $^
+$(MAIN): $(SRC) $(SRC_OBJS)
+	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
 
 test: $(TEST_MAIN)
 
-$(TEST_MAIN): $(SRC_OBJS) $(TESTS_OBJS)
-	$(CC) $(CFLAGS) $(SANITIZE) $(TEST) -o $@ $(LINKERFLAG) $^
+$(TEST_MAIN): $(TEST) $(SRC_OBJS) $(TESTS_OBJS)
+	$(CC) $(CFLAGS) $(SANITIZE) -o $@ $(LINKERFLAG) $^
 	./$(TEST_MAIN)
 
 clean:
