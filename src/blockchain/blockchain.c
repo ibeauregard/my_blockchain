@@ -10,19 +10,6 @@ typedef struct s_blockchain {
 } Blockchain;
 
 static Blockchain blockchain;
-static Node dummy_head;
-static Node dummy_tail;
-
-static bool is_empty();
-static void add_first_node(Node *node);
-static void attach_dummy_head_and_tail();
-static void detach_dummy_head_and_tail();
-static bool all_nodes_are_empty();
-static void desync();
-static int fill_dummy_sync_node();
-static int put_node_content_in_dummy_sync_node(Node *node, Node *dummy_sync_node);
-static int put_block_in_dummy_sync_node(Block *block, Node *dummy_sync_node);
-static int sync_nodes(const Node *dummy_sync_node);
 
 Node *get_nodes()
 {
@@ -42,6 +29,10 @@ Node *get_node_from_id(unsigned int nid)
     }
     return node;
 }
+
+static bool is_empty();
+static void add_first_node(Node *node);
+static void desync();
 
 void add_node(Node *node)
 {
@@ -66,6 +57,9 @@ void add_first_node(Node *node)
     blockchain.num_nodes = 1;
 }
 
+static void attach_dummy_head_and_tail();
+static void detach_dummy_head_and_tail();
+
 void rmv_node(Node *node)
 {
     if (is_empty() || blockchain.num_nodes == 1) {
@@ -81,6 +75,9 @@ void rmv_node(Node *node)
     free_node(node);
     blockchain.num_nodes--;
 }
+
+static Node dummy_head;
+static Node dummy_tail;
 
 void attach_dummy_head_and_tail()
 {
@@ -105,9 +102,11 @@ size_t get_num_nodes()
     return blockchain.num_nodes;
 }
 
+static bool all_nodes_are_empty();
+
 bool blockchain_is_synced()
 {
-    if (all_nodes_are_empty() || blockchain.num_nodes == 1) {
+    if (all_nodes_are_empty()) {
         return true;
     }
     Node *node = blockchain.head;
@@ -140,6 +139,11 @@ void desync()
         node = node->next;
     }
 }
+
+static int fill_dummy_sync_node();
+static int put_node_content_in_dummy_sync_node(Node *node, Node *dummy_sync_node);
+static int put_block_in_dummy_sync_node(Block *block, Node *dummy_sync_node);
+static int sync_nodes(const Node *dummy_sync_node);
 
 int synchronize()
 {
@@ -197,6 +201,68 @@ int sync_nodes(const Node *dummy_sync_node)
         node = node->next;
     }
     return EXIT_SUCCESS;
+}
+
+static void update_sync_state_setup(Block *dummy_heads[], Block *sync_tails[]);
+static void update_sync_state_teardown(Block *dummy_heads[], Block *sync_tails[]);
+static bool sync_tails_can_advance(Block *sync_tails[]);
+static void advance_sync_tails(Block *sync_tails[]);
+
+void update_sync_state()
+{
+    Block *dummy_heads[blockchain.num_nodes];
+    Block *sync_tails[blockchain.num_nodes];
+    update_sync_state_setup(dummy_heads, sync_tails);
+    while (sync_tails_can_advance(sync_tails)) {
+        advance_sync_tails(sync_tails);
+    }
+    update_sync_state_teardown(dummy_heads, sync_tails);
+}
+
+void update_sync_state_setup(Block *dummy_heads[], Block *sync_tails[])
+{
+    size_t i;
+    Node *node;
+    for (i = 0, node = blockchain.head; node; i++, node = node->next) {
+        dummy_heads[i] = new_block(0);
+        sync_tails[i] = dummy_heads[i];
+        sync_tails[i]->next = node->sync_tail ? node->sync_tail->next : node->head;
+    }
+}
+
+void update_sync_state_teardown(Block *dummy_heads[], Block *sync_tails[])
+{
+    size_t i;
+    Node *node;
+    for (i = 0, node = blockchain.head; node; i++, node = node->next) {
+        if (sync_tails[i] != dummy_heads[i]) {
+            node->sync_tail = sync_tails[i];
+        }
+        free_block(dummy_heads[i]);
+    }
+}
+
+static bool sync_tails_can_advance(Block *sync_tails[])
+{
+    bool id_set = false;
+    unsigned int id;
+    for (size_t i = 0; i < blockchain.num_nodes; i++) {
+        if (!sync_tails[i]->next || (id_set && sync_tails[i]->next->id != id)) {
+            return false;
+        }
+        if (!id_set) {
+            id = sync_tails[i]->next->id;
+            id_set = true;
+        }
+    }
+    return true;
+}
+
+void advance_sync_tails(Block *sync_tails[])
+{
+    for (size_t i = 0; i < blockchain.num_nodes; i++) {
+        sync_tails[i] = sync_tails[i]->next;
+    }
 }
 
 void free_blockchain()
