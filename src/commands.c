@@ -141,6 +141,7 @@ int cmd_add_block(Command *command)
 		Block *block = new_block(bid);
 		add_block(block, node);
 	}
+	update_sync_state();
 	return EXIT_SUCCESS;
 }
 
@@ -149,6 +150,7 @@ int cmd_rm_node(Command *command)
 	unsigned int nid = *(command->nidlist);
 	if (!has_node_with_id(nid)) return EXIT_FAILURE;
 	rmv_node(get_node_from_id(nid));
+	update_sync_state();
 	return EXIT_SUCCESS;
 }
 
@@ -165,6 +167,7 @@ int cmd_rm_block(Command *command)
 			node = node->next;
 		}
 	}
+	update_sync_state();
 	return EXIT_SUCCESS;
 }
 

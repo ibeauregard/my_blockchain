@@ -20,12 +20,13 @@ static int save_node(int fildes, Node *node)
 	// We have this conditional to avoid the error type error with unsigned
 	// int (node->sync_tail->id) and signed int (-1). Ideally we have a
 	// signed type that could guarantee that it would hold unsigned int.
-	if (node->sync_tail) {
-		print_count += dprintf(fildes, "%d:%d:", node->id
-		                                       , node->sync_tail->id);
-	} else {
-		print_count += dprintf(fildes, "%d:%d:", node->id, -1);
-	}
+	// if (node->sync_tail) {
+	// 	print_count += dprintf(fildes, "%d:%d:", node->id
+	// 	                                       , node->sync_tail->id);
+	// } else {
+	// 	print_count += dprintf(fildes, "%d:%d:", node->id, -1);
+	// }
+	print_count += dprintf(fildes, "%d:", node->id);
 	Block *current_block = node->head;
 	while (current_block) {
 		print_count += save_block(fildes, current_block);
@@ -81,25 +82,25 @@ static Node *load_node(char *nidline)
 	Node *node = new_node(nid);
 
 	// Second token: sync_tail
-	token = _strsep(&nidline, &delim);
-	long int sync_tail_as_uint = _strtol(token, NULL, 10);
+	// token = _strsep(&nidline, &delim);
+	// long int sync_tail_as_uint = _strtol(token, NULL, 10);
 
-	// Remaining tokens: bids. Also set sync_tail to block if required.
+	// Remaining tokens: bids.
 	delim = ',';
 	while ((token = _strsep(&nidline, &delim)) != NULL) {
 		unsigned int bid = _strtol(token, NULL, 10);
 		Block *curr_block;
 		if ((curr_block = load_block(bid, node)) == NULL) return NULL;
-		if (bid == sync_tail_as_uint) node->sync_tail = curr_block;
+		// if (bid == sync_tail_as_uint) node->sync_tail = curr_block;
 	}
 	
 	// Verify that sync_tail was found in list of blocks
-	if (!node->sync_tail && (sync_tail_as_uint != -1)) return NULL;
+	// if (!node->sync_tail && (sync_tail_as_uint != -1)) return NULL;
 
 	return node;
 }
 
-// load will fail if duplicate blocks or duplicate nodes or bad sync_tail
+// load will fail if duplicate blocks or duplicate nodes 
 static int load_blockchain(int fildes)
 {
 	char *line;
@@ -110,13 +111,13 @@ static int load_blockchain(int fildes)
 		free(line);
 		line = NULL;
 	}
+	update_sync_state();
 	return EXIT_SUCCESS;
 }
 
 int load(char *filename)
 {
 	int fd = open(filename, O_RDONLY);
-	// Node *head_node = get_nodes();
 	if (fd == -1) return EXIT_FAILURE;
 	return load_blockchain(fd);
 }
