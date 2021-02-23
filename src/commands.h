@@ -11,10 +11,10 @@ typedef struct s_command {
 	MainCmd maincmd;
 	bool lflag;
 	bool all;
-	int *nidlist;
-	int nidcount;
-	int *bidlist;
-	int bidcount;
+	unsigned int *nidlist;
+	size_t nidcount;
+	unsigned *bidlist;
+	size_t bidcount;
 } Command;
 
 void free_cmd(Command *command);

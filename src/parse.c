@@ -99,7 +99,7 @@ static void parse_rm_cmd(Command *command, char **line)
 static void parse_id_list(Command *command, char **line, int n, char type) 
 {
 	char delim = ' ';
-	int **xidlist = NULL;
+	unsigned int **xidlist = NULL;
 	// Determine which list we're populating
 	if (type == 'n') {
 		xidlist = &command->nidlist;
@@ -115,11 +115,11 @@ static void parse_id_list(Command *command, char **line, int n, char type)
 		tokencount++;
 	}
 	if (!tokencount) return;
-	*xidlist = malloc(sizeof(int) * tokencount);
+	*xidlist = malloc(sizeof(unsigned int) * tokencount);
 	// Get tokens and add to .xidlist up to a maximum of n
 	// (unless n = 0 in which case no limit)
 	char *token;
-	int xidcount = 0;
+	size_t xidcount = 0;
 	int max = (n == 0) ? tokencount : n;
 	for (int i = 0; i < tokencount && i < max; i++) {
 		token = _strsep(line, &delim);
@@ -133,7 +133,7 @@ static void parse_id_list(Command *command, char **line, int n, char type)
 			command->maincmd = UNDEFINED;
 			return;
 		}
-		*(*xidlist + xidcount) = (int) strtol(token, NULL, 10);
+		*(*xidlist + xidcount) = strtol(token, NULL, 10);
 		xidcount++;
 	}
 	if (type == 'n') {

@@ -48,16 +48,16 @@ void print_cmd(Command *command)
 	printf("lflag: %d\n", command->lflag);
 	printf("all: %d\n", command->all);
 	// Print nidlist
-	printf("nidcount: %d\n", command->nidcount);
+	printf("nidcount: %ld\n", command->nidcount);
 	printf("nid: ");
-	for (int i = 0; i < command->nidcount; i++) {
+	for (size_t i = 0; i < command->nidcount; i++) {
 		printf("%d, ", *(command->nidlist+i));
 	}
 	printf("\n");
 	// Print bidlist
-	printf("bidcount: %d\n", command->bidcount);
+	printf("bidcount: %ld\n", command->bidcount);
 	printf("bid: ");
-	for (int i = 0; i < command->bidcount; i++) {
+	for (size_t i = 0; i < command->bidcount; i++) {
 		printf("%d, ", *(command->bidlist+i));
 	}
 	printf("\n");
@@ -126,9 +126,9 @@ int cmd_add_node(Command *command)
 int cmd_add_block(Command *command)
 {
 	unsigned int bid = *(command->bidlist);
-	int *nidlist = command->nidlist;
-	int nidcount = command->nidcount;
-	for (int i = 0; i < nidcount; i++) {
+	unsigned int *nidlist = command->nidlist;
+	size_t nidcount = command->nidcount;
+	for (size_t i = 0; i < nidcount; i++) {
 		unsigned int nid = *(nidlist + i);
 		if (!has_node_with_id(nid)) continue;
 		Node *node = get_node_from_id(nid);
@@ -149,9 +149,9 @@ int cmd_rm_node(Command *command)
 
 int cmd_rm_block(Command *command)
 {
-	int *bidlist = command->bidlist;
-	int bidcount = command->bidcount;
-	for (int i = 0; i < bidcount; i++) {
+	unsigned int *bidlist = command->bidlist;
+	size_t bidcount = command->bidcount;
+	for (size_t i = 0; i < bidcount; i++) {
 		unsigned int bid = *(bidlist + i);
 		Node *node = get_nodes();
 		while (node) {
