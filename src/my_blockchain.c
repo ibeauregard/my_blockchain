@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "commands.h"
 
-int main()
-{	
+int my_blockchain()
+{
+	load_blockchain();
 	Command *command;
 	while ((command = get_cmd())) {
 		switch (command->maincmd) {
@@ -35,5 +37,10 @@ int main()
 	}
 	quit:
 	free_cmd(command);
-	return 0;
+	return EXIT_SUCCESS;
+}
+
+int main()
+{	
+	return my_blockchain();
 }
