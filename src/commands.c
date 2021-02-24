@@ -303,6 +303,7 @@ int cmd_sync()
 int cmd_quit()
 {
 	save(SAVE_PATHNAME, get_nodes());
+	free_blockchain();
 	return EXIT_SUCCESS;
 }
 
