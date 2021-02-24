@@ -30,5 +30,6 @@ int cmd_rm_block(Command *command);
 void cmd_ls(Command *command);
 int cmd_sync();
 int cmd_quit();
+void cmd_not_found();
 
 #endif
