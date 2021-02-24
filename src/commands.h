@@ -19,6 +19,7 @@ typedef struct s_command {
 
 void free_cmd(Command *command);
 void print_cmd(Command *command);
+void print_prompt();
 Command *get_cmd();
 int load_blockchain();
 

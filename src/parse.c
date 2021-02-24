@@ -64,7 +64,7 @@ static void parse_rm_cmd(Command *command, char **line)
 	if (!_strcmp("node", token)) {
 		command->maincmd = RM_NODE;
 		parse_id_list(command, line, 0, 'n');
-		if (!command->nidcount) {
+		if (!command->nidcount && !command->all) {
 			command->maincmd = UNDEFINED;
 		}
 	} else if (!_strcmp("block", token)) {
