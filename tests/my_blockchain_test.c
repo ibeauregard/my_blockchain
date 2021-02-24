@@ -2,6 +2,7 @@
 
 int main()
 {
+	test_command();
 	test_block();
 	test_node();
 	test_blockchain();

@@ -1,7 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include "utils/uint_array.h"
+#include <stddef.h>
 #include <stdbool.h>
 
 typedef enum e_cmd { UNDEFINED, ADD_NODE, ADD_BLOCK, RM_NODE, 
@@ -20,7 +20,7 @@ typedef struct s_command {
 void free_cmd(Command *command);
 void print_cmd(Command *command);
 void print_prompt();
-Command *get_cmd();
+Command *get_cmd(int fildes);
 int load_blockchain();
 
 int cmd_add_node(Command *command);

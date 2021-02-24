@@ -126,11 +126,11 @@ void print_prompt()
 /* get_cmd: Really just a wrapper function that combines printing the
  * prompt, reading from STDIN, then parsing the string to get Command.
  */
-Command *get_cmd()
+Command *get_cmd(int fildes)
 {
 	print_prompt();
 	Command *command = new_cmd();
-	char *line = _readline(STDIN_FILENO);
+	char *line = _readline(fildes);
 	parse_cmd(command, line);
 	free(line);
 	return command;

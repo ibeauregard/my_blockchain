@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>                 // For STDIN
 
 #include "commands.h"
 
@@ -7,7 +8,7 @@ int my_blockchain()
 {
 	load_blockchain();
 	Command *command;
-	while ((command = get_cmd())) {
+	while ((command = get_cmd(STDIN_FILENO))) {
 		switch (command->maincmd) {
 		case UNDEFINED:
 			cmd_not_found();
