@@ -10,7 +10,7 @@ int my_blockchain()
 	while ((command = get_cmd())) {
 		switch (command->maincmd) {
 		case UNDEFINED:
-			printf("bad command....\n");
+			cmd_not_found();
 			break;
 		case ADD_NODE:
 			cmd_add_node(command);
