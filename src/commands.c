@@ -201,10 +201,6 @@ int cmd_add_block(Command *command)
 	}
 
 	update_sync_state();
-	// We only print error if no blocks were found throughout all nodes.
-	// If one node has block but the rest don't, shouldn't show error.
-	// Also if multiple blocks provided and some never appear, so long 
-	// as one appears once, error will not be generated.
 	if (!blocks_added) {
 		print_error(ERROR_ID_BLOCK_EXISTS);
 		return EXIT_FAILURE;
@@ -268,6 +264,10 @@ int cmd_rm_block(Command *command)
 		}
 	}
 	update_sync_state();
+	// We only print error if no blocks were found throughout all nodes.
+	// If one node has block but the rest don't, shouldn't show error.
+	// Also if multiple blocks provided and some never appear, so long 
+	// as one appears once, error will not be generated.
 	if (!blocks_removed) {
 		print_error(ERROR_ID_BLOCK_NOT_EXISTS);
 		return EXIT_FAILURE;
