@@ -9,7 +9,8 @@
  * struct Blockchain (and its sub-structures like struct Node and struct
  * Block). The second is parse.h which contains the logic for parsing input.
  * And the third is save.h which contains the logic for serializing and 
- * deserializing the data for saving and loading.
+ * deserializing the data for saving and loading. commands.c also pulls
+ * some logic from error.c but it is small in comparison.
  *
  * A few "design" decisions: 
  *
@@ -36,6 +37,7 @@
 #include "blockchain/blockchain_public.h"
 #include "save.h"
 #include "parse.h"
+#include "error.h"
 #include "utils/_string.h"
 #include "utils/_readline.h"
 
@@ -49,14 +51,12 @@ void print_cmd(Command *command)
 	printf("maincmd: %d\n", command->maincmd);
 	printf("lflag: %d\n", command->lflag);
 	printf("all: %d\n", command->all);
-	// Print nidlist
 	printf("nidcount: %ld\n", command->nidcount);
 	printf("nid: ");
 	for (size_t i = 0; i < command->nidcount; i++) {
 		printf("%d, ", *(command->nidlist+i));
 	}
 	printf("\n");
-	// Print bidlist
 	printf("bidcount: %ld\n", command->bidcount);
 	printf("bid: ");
 	for (size_t i = 0; i < command->bidcount; i++) {
@@ -144,22 +144,39 @@ int load_blockchain()
 int cmd_add_node(Command *command)
 {
 	unsigned int nid = *(command->nidlist);
-	if (has_node_with_id(nid)) return EXIT_FAILURE;
-	add_node(new_node(nid));
+	if (has_node_with_id(nid)) {
+		print_error(ERROR_ID_NODE_EXISTS);
+		return EXIT_FAILURE;
+	}
+	Node *node = new_node(nid);
+	if (!node) {
+		print_error(ERROR_ID_NO_RESOURCES);
+		return EXIT_FAILURE;
+	}
+	add_node(node);
 	return EXIT_SUCCESS;
 }
 
 int cmd_add_block(Command *command)
 {
 	unsigned int bid = *(command->bidlist);
+	int blocks_added = 0;
 
 	// If all nodes to be impacted
 	if (command->all) {
 		Node *node = get_nodes();
 		while (node) {
-			if (has_block_with_id(bid, node)) continue;
+			if (has_block_with_id(bid, node)) {
+				node = node->next;
+				continue;
+			}
 			Block *block = new_block(bid);
+			if (!block) {
+				print_error(ERROR_ID_NO_RESOURCES);
+				return EXIT_FAILURE;
+			}
 			add_block(block, node);
+			blocks_added++;
 			node = node->next;
 		}
 	}
@@ -174,22 +191,38 @@ int cmd_add_block(Command *command)
 			Node *node = get_node_from_id(nid);
 			if (has_block_with_id(bid, node)) continue;
 			Block *block = new_block(bid);
+			if (!block) {
+				print_error(ERROR_ID_NO_RESOURCES);
+				return EXIT_FAILURE;
+			}
 			add_block(block, node);
+			blocks_added++;
 		}
 	}
 
 	update_sync_state();
+	// We only print error if no blocks were found throughout all nodes.
+	// If one node has block but the rest don't, shouldn't show error.
+	// Also if multiple blocks provided and some never appear, so long 
+	// as one appears once, error will not be generated.
+	if (!blocks_added) {
+		print_error(ERROR_ID_BLOCK_EXISTS);
+		return EXIT_FAILURE;
+	}
 	return EXIT_SUCCESS;
 }
 
 int cmd_rm_node(Command *command)
 {
+	int nodes_removed = 0;
+
 	// If all nodes to be deleted
 	if (command->all) {
 		Node *node = get_nodes();
 		while (node) {
 			Node *next_node = node->next;
 			rmv_node(node);
+			nodes_removed++;
 			node = next_node;
 		}
 		return EXIT_SUCCESS;
@@ -201,29 +234,44 @@ int cmd_rm_node(Command *command)
 		size_t nidcount = command->nidcount;
 		for (size_t i = 0; i < nidcount; i++) {
 			unsigned int nid = *(nidlist + i);
-			if (!has_node_with_id(nid)) return EXIT_FAILURE;
+			if (!has_node_with_id(nid)) continue;
 			rmv_node(get_node_from_id(nid));
+			nodes_removed++;
 		}
 	}
 
 	update_sync_state();
+	if (!nodes_removed) {
+		print_error(ERROR_ID_NODE_NOT_EXISTS);
+		return EXIT_FAILURE;
+	}
 	return EXIT_SUCCESS;
 }
 
 int cmd_rm_block(Command *command)
 {
+	int blocks_removed = 0;
+
 	unsigned int *bidlist = command->bidlist;
 	size_t bidcount = command->bidcount;
 	for (size_t i = 0; i < bidcount; i++) {
 		unsigned int bid = *(bidlist + i);
 		Node *node = get_nodes();
 		while (node) {
-			if (!has_block_with_id(bid, node)) continue;
+			if (!has_block_with_id(bid, node)) {
+				node = node->next;
+				continue;
+			};
 			rmv_block(get_block_from_id(bid, node), node);
+			blocks_removed++;
 			node = node->next;
 		}
 	}
 	update_sync_state();
+	if (!blocks_removed) {
+		print_error(ERROR_ID_BLOCK_NOT_EXISTS);
+		return EXIT_FAILURE;
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -244,7 +292,12 @@ void cmd_ls(Command *command)
 
 int cmd_sync() 
 {
-	return synchronize();
+	int sync_result = synchronize();
+	if (sync_result == EXIT_FAILURE) {
+		print_error(ERROR_ID_NO_RESOURCES);
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
 }
 
 int cmd_quit()
@@ -252,3 +305,9 @@ int cmd_quit()
 	save(SAVE_PATHNAME, get_nodes());
 	return EXIT_SUCCESS;
 }
+
+void cmd_not_found()
+{
+	print_error(ERROR_ID_CMD_NOT_FOUND);
+}
+
