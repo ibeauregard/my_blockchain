@@ -167,7 +167,8 @@ int cmd_add_block(Command *command)
 		Node *node = get_nodes();
 		while (node) {
 			if (has_block_with_id(bid, node)) {
-				node = node->next;
+                print_error(ERROR_ID_BLOCK_EXISTS);
+			    node = node->next;
 				continue;
 			}
 			Block *block = new_block(bid);
@@ -187,9 +188,15 @@ int cmd_add_block(Command *command)
 		size_t nidcount = command->nidcount;
 		for (size_t i = 0; i < nidcount; i++) {
 			unsigned int nid = *(nidlist + i);
-			if (!has_node_with_id(nid)) continue;
+			if (!has_node_with_id(nid)) {
+			    print_error(ERROR_ID_NODE_NOT_EXISTS);
+                continue;
+			}
 			Node *node = get_node_from_id(nid);
-			if (has_block_with_id(bid, node)) continue;
+			if (has_block_with_id(bid, node)) {
+                print_error(ERROR_ID_BLOCK_EXISTS);
+                continue;
+			}
 			Block *block = new_block(bid);
 			if (!block) {
 				print_error(ERROR_ID_NO_RESOURCES);
@@ -201,10 +208,6 @@ int cmd_add_block(Command *command)
 	}
 
 	update_sync_state();
-	if (!blocks_added) {
-		print_error(ERROR_ID_BLOCK_EXISTS);
-		return EXIT_FAILURE;
-	}
 	return EXIT_SUCCESS;
 }
 
