@@ -4,7 +4,7 @@
 #include "utils/uint_array.h"
 #include <stdbool.h>
 
-typedef enum e_cmd { UNDEFINED, ADD_NODE, ADD_BLOCK, RM_NODE, 
+typedef enum e_cmd { UNDEFINED, EMPTY, ADD_NODE, ADD_BLOCK, RM_NODE,
              RM_BLOCK, LS, SYNC, QUIT } MainCmd;
 
 typedef struct s_command {

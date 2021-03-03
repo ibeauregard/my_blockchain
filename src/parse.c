@@ -26,6 +26,11 @@
 /* Declare parse_id_list here so parse_add_cmd and parse_rm_cmd can use it */
 static void parse_id_list(Command *command, char **line, int n, char type);
 
+static void parse_empty_cmd(Command *command)
+{
+    command->maincmd = EMPTY;
+}
+
 /* parse_add_cmd: Accounts for:
  * add node nid...       
  * add block bid nid...    ...where * can be used.
@@ -178,7 +183,9 @@ void parse_cmd(Command *command, char *line)
 {
 	char delim = ' ';
 	char *token = _strsep(&line, &delim);
-	if (!_strcmp("add", token)) {
+	if (!token) {
+	    parse_empty_cmd(command);
+	} else if (!_strcmp("add", token)) {
 		parse_add_cmd(command, &line);
 	} else if (!_strcmp("rm", token)) {
 		parse_rm_cmd(command, &line);

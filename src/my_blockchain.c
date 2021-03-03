@@ -12,7 +12,9 @@ int my_blockchain()
 		case UNDEFINED:
 			cmd_not_found();
 			break;
-		case ADD_NODE:
+        case EMPTY:
+		    break;
+        case ADD_NODE:
 			cmd_add_node(command);
 			break;
 		case ADD_BLOCK:
